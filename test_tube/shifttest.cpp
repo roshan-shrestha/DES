@@ -1,11 +1,12 @@
 #include <iostream>
 #include <string>
+#include <bitset>
+
 using namespace std;
 
 int main()
 {
-	string name = "charlie";
-
-	cout << ((2 << 1) & 1);
+	bitset<8> test(15);
+	cout << (test << 2);
 	return 0;
 }

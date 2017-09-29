@@ -2,10 +2,19 @@
 #include <vector>
 using namespace std;
 
-this is the test branch;
+bitset<64> key_64;
+bitset<48> key[16];
 
-bitset<64> key;
-bitset<48> key2[16];
+void key_gen()
+{
+    bitset<56> key_56;
+    bitset<28> left;
+    bitset<28> right;
+    bitset<48> key_48;
+
+    // work in progress
+
+}
 
 // Pads the text with 'x'
 string pad_text(string message_text)
@@ -37,7 +46,7 @@ int main()
     string message_text = "12345678x";
     string key_text = "KEY01234";
 
-    key = to_bits(key_text);
+    key_64 = to_bits(key_text);
 
     message_text = pad_text(message_text);
     cout << message_text << endl;			// pad test
