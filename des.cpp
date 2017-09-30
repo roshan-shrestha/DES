@@ -1,3 +1,28 @@
+/* 
+ *     Filename: des.cpp
+ *      Version: 2.0
+ *  Description: Implementation of DES
+ *
+ *       Author: Team Half Baked Brownies
+ *               Bishal Lama
+ *               Narayan Poudel
+ *               Nischal Shrestha
+ *               Roshan Shrestha
+ *         Date: 2017-10-30
+ *
+ *  Project 1: Phase 1
+ *  CS 455 - Computer Security Fundamentals
+ *  Instructor: Dr. Chetan Jaiswal
+ *  Truman State University
+ *
+ */
+
+/* 
+ * -----------------
+ * start of DES code 
+ * -----------------
+ */
+
 #include <iostream>
 #include <bitset>
 #include <string>
@@ -7,18 +32,18 @@ using namespace std;
 bitset<64> key_64;              
 bitset<48> key[8];      
 
-char shift_count[] = {1, 1, 2, 2, 2, 2, 2, 2};
+const char shift_count[] = {1, 1, 2, 2, 2, 2, 2, 2};
 
-char IP[] = {58, 50, 42, 34, 26, 18, 10, 2,
-              60, 52, 44, 36, 28, 20, 12, 4,
-              62, 54, 46, 38, 30, 22, 14, 6,
-              64, 56, 48, 40, 32, 24, 16, 8,
-              57, 49, 41, 33, 25, 17, 9, 1,
-              59, 51, 43, 35, 27, 19, 11, 3,
-              61, 53, 45, 37, 29, 21, 13, 5,
-              63, 55, 47, 39, 31, 23, 15, 7};
+const char IP[] = {58, 50, 42, 34, 26, 18, 10, 2,
+            60, 52, 44, 36, 28, 20, 12, 4,
+            62, 54, 46, 38, 30, 22, 14, 6,
+            64, 56, 48, 40, 32, 24, 16, 8,
+            57, 49, 41, 33, 25, 17, 9, 1,
+            59, 51, 43, 35, 27, 19, 11, 3,
+            61, 53, 45, 37, 29, 21, 13, 5,
+            63, 55, 47, 39, 31, 23, 15, 7};
 
-char IP_1[] = {40, 8, 48, 16, 56, 24, 64, 32,
+const char IP_1[] = {40, 8, 48, 16, 56, 24, 64, 32,
                 39, 7, 47, 15, 55, 23, 63, 31,
                 38, 6, 46, 14, 54, 22, 62, 30,
                 37, 5, 45, 13, 53, 21, 61, 29,
@@ -27,16 +52,16 @@ char IP_1[] = {40, 8, 48, 16, 56, 24, 64, 32,
                 34, 2, 42, 10, 50, 18, 58, 26,
                 33, 1, 41,  9, 49, 17, 57, 25};
 
-char PC_1[] = {57, 49, 41, 33, 25, 17, 9,
-              1, 58, 50, 42, 34, 26, 18,
-              10, 2, 59, 51, 43, 35, 27,
-              19, 11, 3, 60, 52, 44, 36,
-              63, 55, 47, 39, 31, 23, 15,
-              7, 62, 54, 46, 38, 30, 22,
-              14, 6, 61, 53, 45, 37, 29,
-              21, 13, 5, 28, 20, 12, 4};
+const char PC_1[] = {57, 49, 41, 33, 25, 17, 9,
+                1, 58, 50, 42, 34, 26, 18,
+                10, 2, 59, 51, 43, 35, 27,
+                19, 11, 3, 60, 52, 44, 36,
+                63, 55, 47, 39, 31, 23, 15,
+                7, 62, 54, 46, 38, 30, 22,
+                14, 6, 61, 53, 45, 37, 29,
+                21, 13, 5, 28, 20, 12, 4};
 
-char PC_2[] = {14, 17, 11, 24, 1, 5,
+const char PC_2[] = {14, 17, 11, 24, 1, 5,
                 3, 28, 15, 6, 21, 10,
                 23, 19, 12, 4, 26, 8,
                 16, 7, 27, 20, 13, 2,
@@ -45,7 +70,7 @@ char PC_2[] = {14, 17, 11, 24, 1, 5,
                 44, 49, 39, 56, 34, 53,
                 46, 42, 50, 36, 29, 32};
 
-char E[] = {32, 1, 2, 3, 4, 5,
+const char E[] = {32, 1, 2, 3, 4, 5,
            4, 5, 6, 7, 8, 9,
            8, 9, 10, 11, 12, 13,
            12, 13, 14, 15, 16, 17,
@@ -54,7 +79,7 @@ char E[] = {32, 1, 2, 3, 4, 5,
            24, 25, 26, 27, 28, 29,
            28, 29, 30, 31, 32, 1};
 
-char S_BOX[8][4][16] = {
+const char S_BOX[8][4][16] = {
     {
         {14,4,13,1,2,15,11,8,3,10,6,12,5,9,0,7},
         {0,15,7,4,14,2,13,1,10,6,12,11,9,5,3,8},
@@ -105,7 +130,7 @@ char S_BOX[8][4][16] = {
     }
 };
 
-char P[] = {16, 7, 20, 21,
+static const char P[] = {16, 7, 20, 21,
            29, 12, 28, 17,
            1, 15, 23, 26,
            5, 18, 31, 10,
@@ -114,7 +139,9 @@ char P[] = {16, 7, 20, 21,
            19, 13, 30, 6,
            22, 11, 4, 25 };
 
-bitset < 32 > f(bitset < 32 > r, bitset < 48 > k) {
+// Implementation of F(R,K)
+bitset < 32 > f(bitset < 32 > r, bitset < 48 > k) 
+{
     bitset < 48 > exp_r;
 
     // Expand from 32 bits to 48 bits
@@ -152,7 +179,8 @@ bitset < 32 > f(bitset < 32 > r, bitset < 48 > k) {
 }
 
 // Shift the key to its left by a preset count
-bitset < 28 > shift_left(bitset < 28 > k, char shift) {
+bitset < 28 > shift_left(bitset < 28 > k, char shift) 
+{
     bitset < 28 > temp = k;
     for (char i = 27; i >= 0; --i) {
         if (i - shift < 0)
@@ -165,7 +193,8 @@ bitset < 28 > shift_left(bitset < 28 > k, char shift) {
 
 // Generate the bitset keys that are to be used 
 // for the encryption (and decrytion) processes
-void key_gen() {
+void key_gen() 
+{
     // Named the keys after their bit numbers for 
     // easier memorization
     bitset < 56 > key_56;
@@ -207,7 +236,8 @@ void key_gen() {
 
 // Pad the text by adding numerous x's till
 // the length of the string is a factor of 8
-void pad_text(string * text, char * pad_count) {
+void pad_text(string * text, char * pad_count) 
+{
     while ((( * text).length() % 8) != 0) {
         ( * text) += 'x';
         ++( * pad_count);
@@ -215,12 +245,14 @@ void pad_text(string * text, char * pad_count) {
 }
 
 // Remove the pad for decryption
-void unpad_text(string * text, char * pad_count) {
+void unpad_text(string * text, char * pad_count) 
+{
     ( * text) = (( * text).substr(0, ((( * text).length()) - ( * pad_count))));
 }
 
 // Convert STREAMS of string to bitsets
-bitset < 64 > to_bits(const char s[8]) {
+bitset < 64 > to_bits(const char s[8]) 
+{
     bitset < 64 > bits;
     for (char i = 0; i < 8; ++i)
         for (char j = 0; j < 8; ++j)
@@ -229,7 +261,8 @@ bitset < 64 > to_bits(const char s[8]) {
 }
 
 // Convert bitsets to string
-string to_string(bitset < 64 > bits) {
+string to_string(bitset < 64 > bits) 
+{
     string str;
     for (char i = 0; i < 8; ++i) {
         char c = 0;
@@ -243,7 +276,8 @@ string to_string(bitset < 64 > bits) {
 }
 
 /* Needs review from here on */
-bitset < 64 > encrypt(bitset < 64 > & plain) {
+bitset < 64 > encrypt(bitset < 64 > & plain) 
+{
     bitset < 64 > cipher;
     bitset < 64 > new_bits;
     bitset < 32 > left;
@@ -270,7 +304,8 @@ bitset < 64 > encrypt(bitset < 64 > & plain) {
     return cipher;
 }
 
-bitset < 64 > decrypt(bitset < 64 > & cipher) {
+bitset < 64 > decrypt(bitset < 64 > & cipher) 
+{
     bitset < 64 > plain;
     bitset < 64 > new_bits;
     bitset < 32 > left;
@@ -297,49 +332,90 @@ bitset < 64 > decrypt(bitset < 64 > & cipher) {
     return plain;
 }
 
-int main() {
-    ifstream ifile("plain.txt");
-    ifstream kfile("key.txt");
-    string p, k;
-    getline(ifile, p);
-    getline(kfile, k);
-    ifile.close();
-    kfile.close();
+void welcome(char * mode)
+{
+    cout << endl <<
+    "====================================\n\n" <<
+    " Welcome to Half Baked Brownies DES\n\n" <<
+    "====================================\n\n" <<
+    "Enter E to encrypt or D to decrypt: ";
+    cin >> (mode);
+    * mode = toupper( * mode);
+}
 
-    char pad_count;
-    pad_text( & p, & pad_count);
+int main() 
+{   
+    // Read the key text file
+    ifstream kfile("key.txt");
+    string k;
+    getline(kfile, k);
+    kfile.close();
     key_64 = to_bits(k.c_str());
     key_gen();
+    
+    char mode;
+    char pad_count;
+    welcome( & mode);
 
-    string temp_cipher;
-    // Encrypt the placharext 64 bits at a time
-    for (int i = 0; i < p.length(); i += 8) {
-        bitset < 64 > message = to_bits((p.substr(i, 8)).c_str());
-        bitset < 64 > cipher = encrypt(message);
-        temp_cipher += to_string(cipher);
+    if (mode == 'E') {     
+        cout << "\nEncrypting...\n" ;
+
+        // Read the plain text file 
+        ifstream ifile("plain.txt");
+        string p;
+        getline(ifile, p);
+        ifile.close();
+        // Keep count of how may x's are added
+        pad_text( & p, & pad_count);
+        string temp_cipher;
+    
+        // Encrypt the plain text 64 bits at a time
+        for (int i = 0; i < p.length(); i += 8) {
+            bitset < 64 > message = to_bits((p.substr(i, 8)).c_str());
+            bitset < 64 > cipher = encrypt(message);
+            temp_cipher += to_string(cipher);
+        }
+        
+        ofstream ofile;
+        ofile.open("encrypted.txt");
+        ofile << temp_cipher;
+        ofile.close();
+
+        cout << "\nEncryption successful." << 
+                "\nPlease find the cipher text in encrypted.txt\n\n";
+    } 
+    else if (mode == 'D') {  
+        cout << "\nDecrypting...\n" ;      
+        // Read the cipher text file
+        string gibberish;
+        string temp_decipher;
+        bitset < 64 > temp_code;
+        ifstream ifile;
+        ifile.open("encrypted.txt");
+        getline(ifile, gibberish);
+        ifile.close();
+
+        // Take input of the cipher text 64 bits at a time
+        for (int i = 0; i < gibberish.length(); i += 8) {
+            bitset < 64 > gibberish_bits = to_bits((gibberish.substr(i, 8)).c_str());
+            bitset < 64 > decipher = decrypt(gibberish_bits);
+            temp_decipher += to_string(decipher);
+        }
+        ofstream ofile;
+        ofile.open("decrypted.txt");
+        unpad_text( & temp_decipher, & pad_count);
+        ofile << temp_decipher;
+        ofile.close();
+
+        cout << "\nDecryption successful." << 
+                "\nThe message has been saved in decrypted.txt\n\n";
+    } 
+    
+    else 
+    {
+        cout << "\nInvalid input. Please restart.\n";
+        welcome ( & mode);
     }
-    ofstream ofile;
-    ofile.open("encrypted.txt");
-    ofile << temp_cipher;
-    ofile.close();
-
-    string gibberish;
-    string temp_decipher;
-    bitset < 64 > temp_code;
-    ifile.open("encrypted.txt");
-    getline(ifile, gibberish);
-    ifile.close();
-
-    // Take input of the cipher text 64 bits at a time
-    for (int i = 0; i < p.length(); i += 8) {
-        bitset < 64 > gibberish_bits = to_bits((gibberish.substr(i, 8)).c_str());
-        bitset < 64 > decipher = decrypt(gibberish_bits);
-        temp_decipher += to_string(decipher);
-    }
-    ofile.open("decrypted.txt");
-    unpad_text( & temp_decipher, & pad_count);
-    ofile << temp_decipher;
-    ofile.close();
 
     return 0;
 }
