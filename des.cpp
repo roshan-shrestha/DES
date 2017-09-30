@@ -179,16 +179,16 @@ void key_gen()
     bitset<28> left;
     bitset<28> right;
 
-    // Slims down 64 bits key to 56 bits
+    // Slim down 64 bits key to 56 bits
     for (int i = 0; i < 56; ++i)
     {
         key_56[55-i] = key_64[64 - PC_1[i]];
     }
 
-    // Preps 8 rounds of keys
+    // Prep 8 rounds of keys
     for (int round = 0; round < 8; ++round)
     {
-        // Divides 56 bit key to right and left
+        // Divide 56 bit key to right and left
         for (int i = 0; i < 28; ++i)
         {
             right[i] = key_56[i];
@@ -198,7 +198,7 @@ void key_gen()
             left[i-28] = key_56[i];
         }
 
-        // Shifting the subkeys per their shift count
+        // Shift the subkeys per their shift count
         left = shift_left(left, shift_count[round]);
         right = shift_left(right, shift_count[round]);
 
@@ -220,14 +220,19 @@ void key_gen()
 
 // Pad the text by adding numerous x's till
 // the length of the string is a factor of 8
-void pad_text(string* message_text)
+void pad_text(string* text, int* pad_count)
 {
-    string temp = * message_text;
-    while((temp.length() % 8) != 0)
+    while(((*text).length() % 8) != 0)
     {
-        temp += 'x';
+        (*text) += 'x';
+        ++(*pad_count);
     }
-    *message_text = temp;
+}
+
+// Remove the pad for decryption
+void unpad_text(string* text, int* pad_count)
+{
+    (*text) = ((*text).substr(0,(((*text).length()) - (*pad_count))));
 }
 
 // Convert STREAMS of string to bitsets
@@ -319,16 +324,18 @@ int main() {
 	ifstream ifile("plain.txt");
 	ifstream kfile("key.txt");
 	string p, k;
-  getline(ifile, p);
+    getline(ifile, p);
 	getline(kfile, k);
 	ifile.close();
-
 	kfile.close();
-	pad_text(&p);
+
+    int pad_count;
+	pad_text(&p, &pad_count);
 	key_64 = to_bits(k.c_str());
 	key_gen();
 
 	string temp_cipher;
+    // Encrypt the plaintext 64 bits at a time
 	for (int i = 0; i < p.length(); i += 8)
 	{
 		bitset<64> message = to_bits((p.substr(i,8)).c_str());
@@ -344,9 +351,10 @@ int main() {
 	string temp_decipher;
 	bitset<64> temp_code;
 	ifile.open("encrypted.txt");
-  getline(ifile, gibberish);
+    getline(ifile, gibberish);
 	ifile.close();
 
+    // Take input of the cipher text 64 bits at a time
 	for (int i = 0; i < p.length(); i += 8)
 	{
 		bitset<64> gibberish_bits = to_bits((gibberish.substr(i,8)).c_str());
@@ -354,6 +362,7 @@ int main() {
 		temp_decipher += to_string(decipher);
 	}
 	ofile.open("decrypted.txt");
+    unpad_text(&temp_decipher, &pad_count);
 	ofile << temp_decipher;
 	ofile.close();
 
