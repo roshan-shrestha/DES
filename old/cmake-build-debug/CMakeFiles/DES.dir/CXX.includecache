@@ -9,6 +9,10 @@
 /Users/Roshan/DESv2/DES/main.cpp
 iostream
 -
-vector
+bitset
+-
+string
+-
+fstream
 -
 

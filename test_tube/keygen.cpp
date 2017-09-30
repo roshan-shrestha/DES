@@ -83,8 +83,7 @@ void key_generate()
 			key_48[47-i] = key_56[56 - PC_2[i]];
 		}
 		key[round] = key_48;
-
-		cout << "key " << round << ": " << key[round+1] << endl;
+		cout << "key " << round << ": " << key[round] << endl;
 	}
 }
 
