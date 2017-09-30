@@ -7,9 +7,9 @@ using namespace std;
 bitset<64> key_64;              
 bitset<48> key[8];      
 
-int shift_count[] = {1, 1, 2, 2, 2, 2, 2, 2};
+short shift_count[] = {1, 1, 2, 2, 2, 2, 2, 2};
 
-int IP[] = {58, 50, 42, 34, 26, 18, 10, 2,
+short IP[] = {58, 50, 42, 34, 26, 18, 10, 2,
             60, 52, 44, 36, 28, 20, 12, 4,
             62, 54, 46, 38, 30, 22, 14, 6,
             64, 56, 48, 40, 32, 24, 16, 8,
@@ -18,7 +18,7 @@ int IP[] = {58, 50, 42, 34, 26, 18, 10, 2,
             61, 53, 45, 37, 29, 21, 13, 5,
             63, 55, 47, 39, 31, 23, 15, 7};
 
-int IP_1[] = {40, 8, 48, 16, 56, 24, 64, 32,
+short IP_1[] = {40, 8, 48, 16, 56, 24, 64, 32,
               39, 7, 47, 15, 55, 23, 63, 31,
               38, 6, 46, 14, 54, 22, 62, 30,
               37, 5, 45, 13, 53, 21, 61, 29,
@@ -27,7 +27,7 @@ int IP_1[] = {40, 8, 48, 16, 56, 24, 64, 32,
               34, 2, 42, 10, 50, 18, 58, 26,
               33, 1, 41,  9, 49, 17, 57, 25};
 
-int PC_1[] = {57, 49, 41, 33, 25, 17, 9,
+short PC_1[] = {57, 49, 41, 33, 25, 17, 9,
               1, 58, 50, 42, 34, 26, 18,
               10, 2, 59, 51, 43, 35, 27,
               19, 11, 3, 60, 52, 44, 36,
@@ -36,7 +36,7 @@ int PC_1[] = {57, 49, 41, 33, 25, 17, 9,
               14, 6, 61, 53, 45, 37, 29,
               21, 13, 5, 28, 20, 12, 4};
 
-int PC_2[] = {14, 17, 11, 24, 1, 5,
+short PC_2[] = {14, 17, 11, 24, 1, 5,
               3, 28, 15, 6, 21, 10,
               23, 19, 12, 4, 26, 8,
               16, 7, 27, 20, 13, 2,
@@ -45,7 +45,7 @@ int PC_2[] = {14, 17, 11, 24, 1, 5,
               44, 49, 39, 56, 34, 53,
               46, 42, 50, 36, 29, 32};
 
-int E[] = {32, 1, 2, 3, 4, 5,
+short E[] = {32, 1, 2, 3, 4, 5,
            4, 5, 6, 7, 8, 9,
            8, 9, 10, 11, 12, 13,
            12, 13, 14, 15, 16, 17,
@@ -54,7 +54,7 @@ int E[] = {32, 1, 2, 3, 4, 5,
            24, 25, 26, 27, 28, 29,
            28, 29, 30, 31, 32, 1};
 
-int S_BOX[8][4][16] = {
+short S_BOX[8][4][16] = {
         {
                 {14,4,13,1,2,15,11,8,3,10,6,12,5,9,0,7},
                 {0,15,7,4,14,2,13,1,10,6,12,11,9,5,3,8},
@@ -105,7 +105,7 @@ int S_BOX[8][4][16] = {
         }
 };
 
-int P[] = {16, 7, 20, 21,
+short P[] = {16, 7, 20, 21,
            29, 12, 28, 17,
            1, 15, 23, 26,
            5, 18, 31, 10,
@@ -119,7 +119,7 @@ bitset<32> f(bitset<32> r, bitset<48> k)
 	bitset<48> exp_r;
 
 	// Expand from 32 bits to 48 bits
-	for(int i = 0; i < 48; ++i)
+	for(short i = 0; i < 48; ++i)
 	{
 		exp_r[47 - i] = r[32 - E[i]];
 	}
@@ -128,18 +128,18 @@ bitset<32> f(bitset<32> r, bitset<48> k)
 	exp_r = exp_r ^ k;
 
 	bitset<32> output;
-	int x = 0;
+	short x = 0;
 
 	// Decide rows and columns for the new bits
-	for(int i = 0; i < 48; i = i + 6)
+	for(short i = 0; i < 48; i = i + 6)
 	{
-		int row = exp_r[47 - i] * 2 + 
+		short row = exp_r[47 - i] * 2 + 
 				  exp_r[47 - i - 5];
-		int col = exp_r[47 - i - 1] * 8 + 
+		short col = exp_r[47 - i - 1] * 8 + 
 				  exp_r[47 - i - 2] * 4 + 
 				  exp_r[47 - i - 3] * 2 + 
 				  exp_r[47 - i - 4];
-		int num = S_BOX[i/6][row][col];
+		short num = S_BOX[i/6][row][col];
 		bitset<4> bin(num);
 		output[31-x] = bin[3];
 		output[31-x-1] = bin[2];
@@ -149,16 +149,16 @@ bitset<32> f(bitset<32> r, bitset<48> k)
 	}
 
 	bitset<32> temp = output;
-	for(int i=0; i<32; ++i)
+	for(short i=0; i<32; ++i)
 		output[31-i] = temp[32-P[i]];
 	return output;
 }
 
 // Shift the key to its left by a preset count
-bitset<28> shift_left(bitset<28> k, int shift)
+bitset<28> shift_left(bitset<28> k, short shift)
 {
     bitset<28> temp = k;
-    for(int i = 27; i >= 0; --i)
+    for(short i = 27; i >= 0; --i)
     {
         if(i-shift < 0)
             k[i] = temp[i-shift + 28];
@@ -180,20 +180,20 @@ void key_gen()
     bitset<28> right;
 
     // Slim down 64 bits key to 56 bits
-    for (int i = 0; i < 56; ++i)
+    for (short i = 0; i < 56; ++i)
     {
         key_56[55-i] = key_64[64 - PC_1[i]];
     }
 
     // Prep 8 rounds of keys
-    for (int round = 0; round < 8; ++round)
+    for (short round = 0; round < 8; ++round)
     {
         // Divide 56 bit key to right and left
-        for (int i = 0; i < 28; ++i)
+        for (short i = 0; i < 28; ++i)
         {
             right[i] = key_56[i];
         }
-        for (int i = 28; i < 56; ++i)
+        for (short i = 28; i < 56; ++i)
         {
             left[i-28] = key_56[i];
         }
@@ -202,15 +202,15 @@ void key_gen()
         left = shift_left(left, shift_count[round]);
         right = shift_left(right, shift_count[round]);
 
-        for(int i = 28; i < 56; ++i)
+        for(short i = 28; i < 56; ++i)
         {
             key_56[i] = left[i-28];
         }
-        for(int i = 0; i < 28; ++i)
+        for(short i = 0; i < 28; ++i)
         {
             key_56[i] = right[i];
         }
-        for(int i = 0; i < 48; ++i)
+        for(short i = 0; i < 48; ++i)
         {
             key_48[47-i] = key_56[56 - PC_2[i]];
         }
@@ -220,7 +220,7 @@ void key_gen()
 
 // Pad the text by adding numerous x's till
 // the length of the string is a factor of 8
-void pad_text(string* text, int* pad_count)
+void pad_text(string* text, short* pad_count)
 {
     while(((*text).length() % 8) != 0)
     {
@@ -230,7 +230,7 @@ void pad_text(string* text, int* pad_count)
 }
 
 // Remove the pad for decryption
-void unpad_text(string* text, int* pad_count)
+void unpad_text(string* text, short* pad_count)
 {
     (*text) = ((*text).substr(0,(((*text).length()) - (*pad_count))));
 }
@@ -239,8 +239,8 @@ void unpad_text(string* text, int* pad_count)
 bitset<64> to_bits(const char s[8])
 {
 	bitset<64> bits;
-	for(int i = 0; i < 8; ++i)
-		for(int j = 0; j < 8; ++j)
+	for(short i = 0; i < 8; ++i)
+		for(short j = 0; j < 8; ++j)
 			bits[i * 8 + j] = ((s[i] >> j) & 1);
 	return bits;
 }
@@ -249,10 +249,10 @@ bitset<64> to_bits(const char s[8])
 string to_string(bitset<64> bits)
 {
     string str;
-    for(int i = 0; i < 8; ++i)
+    for(short i = 0; i < 8; ++i)
     {
         char c = 0;
-        for(int j = 7; j >= 0; j--){
+        for(short j = 7; j >= 0; j--){
             c = c + bits[i*8 + j];
             if(j!=0) c = c *2;
         }
@@ -269,24 +269,24 @@ bitset<64> encrypt(bitset<64>& plain)
 	bitset<32> left;
 	bitset<32> right;
 	bitset<32> left_new;
-	for(int i = 0; i < 64; ++i)
+	for(short i = 0; i < 64; ++i)
 		new_bits[63 - i] = plain[64 - IP[i]];
-	for(int i = 32; i < 64; ++i)
+	for(short i = 32; i < 64; ++i)
 		left[i - 32] = new_bits[i];
-	for(int i = 0; i < 32; ++i)
+	for(short i = 0; i < 32; ++i)
 		right[i] = new_bits[i];
-	for(int round = 0; round < 16; ++round)
+	for(short round = 0; round < 16; ++round)
 	{
 		left_new = right;
 		right = left ^ f(right,key[round]);
 		left = left_new;
 	}
-	for(int i = 0; i < 32; ++i)
+	for(short i = 0; i < 32; ++i)
 		cipher[i] = left[i];
-	for(int i = 32; i < 64; ++i)
+	for(short i = 32; i < 64; ++i)
 		cipher[i] = right[i - 32];
 	new_bits = cipher;
-	for(int i = 0; i < 64; ++i)
+	for(short i = 0; i < 64; ++i)
 		cipher[63 - i] = new_bits[64 - IP_1[i]];
 	return cipher;
 }
@@ -298,29 +298,30 @@ bitset<64> decrypt(bitset<64>& cipher)
 	bitset<32> left;
 	bitset<32> right;
 	bitset<32> left_new;
-	for(int i = 0; i < 64; ++i)
+	for(short i = 0; i < 64; ++i)
 		new_bits[63 - i] = cipher[64 - IP[i]];
-	for(int i = 32; i < 64; ++i)
+	for(short i = 32; i < 64; ++i)
 		left[i - 32] = new_bits[i];
-	for(int i = 0; i < 32; ++i)
+	for(short i = 0; i < 32; ++i)
 		right[i] = new_bits[i];
-	for(int round = 0; round < 16; ++round)
+	for(short round = 0; round < 16; ++round)
 	{
 		left_new = right;
 		right = left ^ f(right,key[15 - round]);
 		left = left_new;
 	}
-	for(int i = 0; i < 32; ++i)
+	for(short i = 0; i < 32; ++i)
 		plain[i] = left[i];
-	for(int i = 32; i < 64; ++i)
+	for(short i = 32; i < 64; ++i)
 		plain[i] = right[i - 32];
 	new_bits = plain;
-	for(int i = 0; i < 64; ++i)
+	for(short i = 0; i < 64; ++i)
 		plain[63 - i] = new_bits[64 - IP_1[i]];
 	return plain;
 }
 
-int main() {
+int main() 
+{
 	ifstream ifile("plain.txt");
 	ifstream kfile("key.txt");
 	string p, k;
@@ -329,14 +330,14 @@ int main() {
 	ifile.close();
 	kfile.close();
 
-    int pad_count;
+    short pad_count;
 	pad_text(&p, &pad_count);
 	key_64 = to_bits(k.c_str());
 	key_gen();
 
 	string temp_cipher;
-    // Encrypt the plaintext 64 bits at a time
-	for (int i = 0; i < p.length(); i += 8)
+    // Encrypt the plashortext 64 bits at a time
+	for (short i = 0; i < p.length(); i += 8)
 	{
 		bitset<64> message = to_bits((p.substr(i,8)).c_str());
 		bitset<64> cipher = encrypt(message);
@@ -355,7 +356,7 @@ int main() {
 	ifile.close();
 
     // Take input of the cipher text 64 bits at a time
-	for (int i = 0; i < p.length(); i += 8)
+	for (short i = 0; i < p.length(); i += 8)
 	{
 		bitset<64> gibberish_bits = to_bits((gibberish.substr(i,8)).c_str());
 		bitset<64> decipher = decrypt(gibberish_bits);
