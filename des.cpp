@@ -283,13 +283,19 @@ bitset < 64 > encrypt(bitset < 64 > & plain)
     bitset < 32 > left;
     bitset < 32 > right;
     bitset < 32 > left_new;
+    // Permutation
     for (char i = 0; i < 64; ++i)
         new_bits[63 - i] = plain[64 - IP[i]];
+    
+    // Left division
     for (char i = 32; i < 64; ++i)
         left[i - 32] = new_bits[i];
+    
+    // Right division
     for (char i = 0; i < 32; ++i)
         right[i] = new_bits[i];
-    for (char round = 0; round < 16; ++round) {
+    
+    for (char round = 0; round < 8; ++round) {
         left_new = right;
         right = left ^ f(right, key[round]);
         left = left_new;
@@ -317,9 +323,9 @@ bitset < 64 > decrypt(bitset < 64 > & cipher)
         left[i - 32] = new_bits[i];
     for (char i = 0; i < 32; ++i)
         right[i] = new_bits[i];
-    for (char round = 0; round < 16; ++round) {
+    for (char round = 0; round < 8; ++round) {
         left_new = right;
-        right = left ^ f(right, key[15 - round]);
+        right = left ^ f(right, key[7 - round]);
         left = left_new;
     }
     for (char i = 0; i < 32; ++i)
@@ -335,9 +341,15 @@ bitset < 64 > decrypt(bitset < 64 > & cipher)
 void welcome(char * mode)
 {
     cout << endl <<
-    "====================================\n\n" <<
-    " Welcome to Half Baked Brownies DES\n\n" <<
-    "====================================\n\n" <<
+    string (38, '=') << "\n\n" <<
+    "    Welcome to Half Baked Brownies\n" <<
+    "           ____  _____ ____\n" << 
+    "          |  _ \\| ____/ ___| \n" <<
+    "          | | | |  _| \\___ \\ \n" <<
+    "          | |_| | |___ ___) | \n" <<
+    "          |____/|_____|____/ \n\n" <<
+
+    string (38, '=') << "\n\n" <<
     "Enter E to encrypt or D to decrypt: ";
     cin >> (mode);
     * mode = toupper( * mode);
@@ -353,6 +365,7 @@ int main()
     key_64 = to_bits(k.c_str());
     key_gen();
     
+    // Mode to check Encrypt or Decrypt
     char mode;
     char pad_count;
     welcome( & mode);
@@ -385,11 +398,12 @@ int main()
                 "\nPlease find the cipher text in encrypted.txt\n\n";
     } 
     else if (mode == 'D') {  
-        cout << "\nDecrypting...\n" ;      
-        // Read the cipher text file
+        cout << "\nDecrypting...\n" ;
+
         string gibberish;
         string temp_decipher;
-        bitset < 64 > temp_code;
+
+        // Read the cipher text file
         ifstream ifile;
         ifile.open("encrypted.txt");
         getline(ifile, gibberish);
@@ -413,7 +427,7 @@ int main()
     
     else 
     {
-        cout << "\nInvalid input. Please restart.\n";
+        cout << "\nInvalid input. Let's start over again.\n";
         welcome ( & mode);
     }
 
