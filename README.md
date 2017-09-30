@@ -1,3 +1,2 @@
 # DESv2.0
-Half Baked Brownies' Second attempt on DES implementatio
-n
+Half Baked Brownies' second attempt on DES implementation
