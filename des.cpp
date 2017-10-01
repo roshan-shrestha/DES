@@ -11,7 +11,7 @@
  *               Roshan Shrestha
  *         Date: 2017-10-30
  *
- *  Project 1: Phase 1
+ *  Project Part 1
  *  CS 455 - Computer Security Fundamentals
  *  Instructor: Dr. Chetan Jaiswal
  *  Truman State University
@@ -22,6 +22,8 @@
 #include <bitset>
 #include <string>
 #include <fstream>
+#include <time.h>
+
 using namespace std;    
 
 const char shift_count[] = {1, 1, 2, 2, 2, 2, 2, 2};
@@ -352,6 +354,7 @@ bitset < 64 > decrypt(bitset < 64 > & cipher)
 
 void welcome(char * mode)
 {   
+    system("clear");
     // Display a 'stylish' welcome logo
     cout << endl <<
     string (38, '=') << "\n\n" <<
@@ -377,6 +380,7 @@ int main()
     kfile.close();
     key_64 = to_bits(k.c_str());
     key_gen();
+    clock_t t1, t2;
     
     // Mode to check Encrypt or Decrypt
     char mode;
@@ -384,7 +388,10 @@ int main()
     welcome( & mode);
 
     if (mode == 'E') {     
-        cout << "\nEncrypting...\n" ;
+        cout << "\nEncrypting...\n";
+        
+        // Timer starts here
+        t1 = clock();
 
         // Read the plain text file 
         ifstream ifile("plain.txt");
@@ -407,11 +414,25 @@ int main()
         ofile << temp_cipher;
         ofile.close();
 
+        // Stop timer
+        t2 = clock();
+        float diff ((float)t2-(float)t1);
+        float milliseconds = (diff / CLOCKS_PER_SEC) * 1000;
+
         cout << "\nEncryption successful." << 
                 "\nPlease find the cipher text in encrypted.txt\n\n";
-    } 
+
+        int bitlen = p.length() * 8;
+        cout << "Stats\n" << "=====\n";
+        cout << "Characters count   : " << p.length() << endl;
+        cout << "Bits count         : " << "64 * " << (bitlen / 64) << " bits\n";
+        cout << "Encryption runtime : " << milliseconds << " ms\n\n"; 
+    }  
     else if (mode == 'D') {  
         cout << "\nDecrypting...\n" ;
+        
+        // Timer starts here
+        t1 = clock();
 
         string gibberish;
         string temp_decipher;
@@ -433,8 +454,19 @@ int main()
         ofile << temp_decipher;
         ofile.close();
 
+        // Stop time
+        t2 = clock();
+        float diff ((float)t2-(float)t1);
+        float milliseconds = (diff / CLOCKS_PER_SEC) * 1000 ;
+
         cout << "\nDecryption successful." << 
                 "\nThe message has been saved in decrypted.txt\n\n";
+        
+        int bitlen = gibberish.length() * 8;
+        cout << "Stats\n" << "=====\n";
+        cout << "Characters count   : " << gibberish.length() << endl;
+        cout << "Bits count         : " << "64 * " << (bitlen / 64) << " bits\n";
+        cout << "Decryption runtime : " << milliseconds << " ms\n\n"; 
     } 
     
     else 
