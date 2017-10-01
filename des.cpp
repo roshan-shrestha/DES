@@ -1,9 +1,10 @@
 /* 
+ *
  *     Filename: des.cpp
  *      Version: 2.0
  *  Description: Implementation of DES
  *
- *       Author: Team Half Baked Brownies
+ *       Author: Team "Half Baked Brownies"
  *               Bishal Lama
  *               Narayan Poudel
  *               Nischal Shrestha
@@ -17,20 +18,11 @@
  *
  */
 
-/* 
- * -----------------
- * start of DES code 
- * -----------------
- */
-
 #include <iostream>
 #include <bitset>
 #include <string>
 #include <fstream>
-using namespace std;
-
-bitset<64> key_64;              
-bitset<48> key[8];      
+using namespace std;    
 
 const char shift_count[] = {1, 1, 2, 2, 2, 2, 2, 2};
 
@@ -50,7 +42,7 @@ const char IP_1[] = {40, 8, 48, 16, 56, 24, 64, 32,
                 36, 4, 44, 12, 52, 20, 60, 28,
                 35, 3, 43, 11, 51, 19, 59, 27,
                 34, 2, 42, 10, 50, 18, 58, 26,
-                33, 1, 41,  9, 49, 17, 57, 25};
+                33, 1, 41, 9, 49, 17, 57, 25};
 
 const char PC_1[] = {57, 49, 41, 33, 25, 17, 9,
                 1, 58, 50, 42, 34, 26, 18,
@@ -130,7 +122,7 @@ const char S_BOX[8][4][16] = {
     }
 };
 
-static const char P[] = {16, 7, 20, 21,
+const char P[] = {16, 7, 20, 21,
            29, 12, 28, 17,
            1, 15, 23, 26,
            5, 18, 31, 10,
@@ -139,7 +131,13 @@ static const char P[] = {16, 7, 20, 21,
            19, 13, 30, 6,
            22, 11, 4, 25 };
 
-// Implementation of F(R,K)
+
+// Main 64-bit key
+bitset<64> key_64;
+// 8 keys for 8 rounds of encryption              
+bitset<48> key[8];  
+
+//  F(R,K)
 bitset < 32 > f(bitset < 32 > r, bitset < 48 > k) 
 {
     bitset < 48 > exp_r;
@@ -156,7 +154,7 @@ bitset < 32 > f(bitset < 32 > r, bitset < 48 > k)
     char x = 0;
 
     // Decide rows and columns for the new bits
-    for (char i = 0; i < 48; i = i + 6) {
+    for (char i = 0; i < 48; i += 6) {
         char row = exp_r[47 - i] * 2 +
                    exp_r[47 - i - 5];
         char col = exp_r[47 - i - 1] * 8 +
@@ -236,18 +234,11 @@ void key_gen()
 
 // Pad the text by adding numerous x's till
 // the length of the string is a factor of 8
-void pad_text(string * text, char * pad_count) 
+void pad_text(string * text) 
 {
     while ((( * text).length() % 8) != 0) {
         ( * text) += 'x';
-        ++( * pad_count);
     }
-}
-
-// Remove the pad for decryption
-void unpad_text(string * text, char * pad_count) 
-{
-    ( * text) = (( * text).substr(0, ((( * text).length()) - ( * pad_count))));
 }
 
 // Convert STREAMS of string to bitsets
@@ -275,7 +266,7 @@ string to_string(bitset < 64 > bits)
     return str;
 }
 
-/* Needs review from here on */
+// Encrypt 64-bits at a time
 bitset < 64 > encrypt(bitset < 64 > & plain) 
 {
     bitset < 64 > cipher;
@@ -283,6 +274,7 @@ bitset < 64 > encrypt(bitset < 64 > & plain)
     bitset < 32 > left;
     bitset < 32 > right;
     bitset < 32 > left_new;
+    
     // Permutation
     for (char i = 0; i < 64; ++i)
         new_bits[63 - i] = plain[64 - IP[i]];
@@ -295,18 +287,25 @@ bitset < 64 > encrypt(bitset < 64 > & plain)
     for (char i = 0; i < 32; ++i)
         right[i] = new_bits[i];
     
+    // 8 rounds of f(r,k)
     for (char round = 0; round < 8; ++round) {
         left_new = right;
         right = left ^ f(right, key[round]);
+        // Set new left for the next round
         left = left_new;
     }
+
+    // Join left and right
     for (char i = 0; i < 32; ++i)
         cipher[i] = left[i];
     for (char i = 32; i < 64; ++i)
         cipher[i] = right[i - 32];
     new_bits = cipher;
+
+    // Permutation
     for (char i = 0; i < 64; ++i)
         cipher[63 - i] = new_bits[64 - IP_1[i]];
+    
     return cipher;
 }
 
@@ -317,37 +316,51 @@ bitset < 64 > decrypt(bitset < 64 > & cipher)
     bitset < 32 > left;
     bitset < 32 > right;
     bitset < 32 > left_new;
+
+    // Permutation
     for (char i = 0; i < 64; ++i)
         new_bits[63 - i] = cipher[64 - IP[i]];
+    
+    // Left division
     for (char i = 32; i < 64; ++i)
         left[i - 32] = new_bits[i];
+    // Right division
     for (char i = 0; i < 32; ++i)
         right[i] = new_bits[i];
+
+    // 8 rounds of f(r,k)    
     for (char round = 0; round < 8; ++round) {
         left_new = right;
         right = left ^ f(right, key[7 - round]);
         left = left_new;
     }
+
+
+    // Join left and right
     for (char i = 0; i < 32; ++i)
         plain[i] = left[i];
     for (char i = 32; i < 64; ++i)
         plain[i] = right[i - 32];
+
     new_bits = plain;
+
+    // Permutation
     for (char i = 0; i < 64; ++i)
         plain[63 - i] = new_bits[64 - IP_1[i]];
     return plain;
 }
 
 void welcome(char * mode)
-{
+{   
+    // Display a 'stylish' welcome logo
     cout << endl <<
     string (38, '=') << "\n\n" <<
     "    Welcome to Half Baked Brownies\n" <<
-    "           ____  _____ ____\n" << 
-    "          |  _ \\| ____/ ___| \n" <<
-    "          | | | |  _| \\___ \\ \n" <<
-    "          | |_| | |___ ___) | \n" <<
-    "          |____/|_____|____/ \n\n" <<
+    "          ____  _____ ____\n" << 
+    "         |  _ \\| ____/ ___| \n" <<
+    "         | | | |  _| \\___ \\ \n" <<
+    "         | |_| | |___ ___) | \n" <<
+    "         |____/|_____|____/ \n\n" <<
 
     string (38, '=') << "\n\n" <<
     "Enter E to encrypt or D to decrypt: ";
@@ -379,7 +392,7 @@ int main()
         getline(ifile, p);
         ifile.close();
         // Keep count of how may x's are added
-        pad_text( & p, & pad_count);
+        pad_text( & p);
         string temp_cipher;
     
         // Encrypt the plain text 64 bits at a time
@@ -417,7 +430,6 @@ int main()
         }
         ofstream ofile;
         ofile.open("decrypted.txt");
-        unpad_text( & temp_decipher, & pad_count);
         ofile << temp_decipher;
         ofile.close();
 
