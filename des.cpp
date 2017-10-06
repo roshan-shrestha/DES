@@ -337,7 +337,6 @@ bitset < 64 > decrypt(bitset < 64 > & cipher)
         left = left_new;
     }
 
-
     // Join left and right
     for (char i = 0; i < 32; ++i)
         plain[i] = left[i];
