@@ -353,7 +353,7 @@ bitset < 64 > decrypt(bitset < 64 > & cipher)
 
 void welcome(char * mode)
 {   
-    system("clear");
+    //  system("clear"); // only for Linux and Mac
     // Display a 'stylish' welcome logo
     cout << endl <<
     string (38, '=') << "\n\n" <<
@@ -397,7 +397,6 @@ int main()
         string p;
         getline(ifile, p);
         ifile.close();
-        // Keep count of how may x's are added
         pad_text( & p);
         string temp_cipher;
     
