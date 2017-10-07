@@ -1,2 +1,2 @@
-# DESv2.0
-Half Baked Brownies' second attempt on DES implementation
+# DES
+Implementation of DES on C++
